@@ -38,6 +38,7 @@ img {
 }
 
 body {
+    width: 100%;
     background: var(--bg-top-image);
     background-color: var(--main-bg);
     color: var(--font-color);
@@ -252,4 +253,18 @@ ul li:hover .remove {
 
 .clear:hover {
     color: var(--font-color-hover);
+}
+.todoList{
+    padding: 0px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px soli gray;
+}
+.deux{
+    display: flex;
+}
+.deux input{
+    margin-right: 10px;
+
 }

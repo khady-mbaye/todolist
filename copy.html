@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            background-color: hsl(235, 21%, 11%);
+            font-family: system-ui;
+        }
+
+        .banner-con {
+            width: 100%;
+            height: 60vh;
+        }
+
+        .banner {
+            width: 100%;
+            height: 100%;
+            background: url("./images/bg-desktop-dark.jpg");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .content {
+            width: 600px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20vh;
+        }
+
+        .content h1 {
+            letter-spacing: 3px;
+            color: #fff;
+        }
+
+        .content img {
+            height: 34px;
+        }
+
+        .todo {
+            width: 600px;
+            max-height: 498px;
+        }
+
+        form {
+            width: 100%;
+            height: 83px;
+        }
+
+        form input {
+            width: 100%;
+            padding: 15px 30px;
+            border-radius: 5px;
+            margin-top: 1.5rem;
+            background: hsl(235, 24%, 19%);
+            font-size: 16px;
+            color: #fff;
+            letter-spacing: 1px;
+            outline: none;
+            border: none;
+        }
+
+        .list {
+            width: 100%;
+            max-height: 330px;
+            margin-top: 1.5rem;
+            background-color: hsl(235, 24%, 19%);
+        }
+
+        .todo-con {
+            width: 100%;
+            /* background-color: hsl(235, 24%, 19%); */
+            border-radius: 5px;
+        }
+
+        .todo-li {
+            display: flex;
+            /* background-color: hsl(235, 24%, 19%); */
+            padding: 1rem 0.9rem;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            font-style: italic;
+            font-size: 18px;
+            align-items: center;
+        }
+
+        .todo-li p {
+            width: 92%;
+            color: gray;
+        }
+
+        .todo-li .check {
+            width: 20px;
+            height: 20px;
+            border: 1px solid hsl(233, 14%, 35%);
+            border-radius: 50%;
+            display: grid;
+            place-content: center;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+
+        .todo-li .check img {
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+
+        .todo-li .close {
+            background: transparent;
+            border: none;
+            outline: none;
+            opacity: 0;
+            transition: all 0.4s ease;
+            cursor: pointer;
+        }
+
+        .todo-li:hover .close {
+            opacity: 1;
+        }
+
+        .hr {
+            width: 100%;
+            background: hsl(233, 14%, 35%);
+            height: 0.9px;
+        }
+
+        .info {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            color: hsl(234, 11%, 52%);
+            padding: 1rem 0.9rem;
+            background: hsl(235, 24%, 19%);
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+            cursor: pointer;
+        }
+
+        .choice {
+            display: flex;
+        }
+
+        .choice p {
+            padding: 0 5px;
+        }
+
+        .info p:hover {
+            color: hsl(220, 98%, 61%);
+        }
+
+        .active {
+            color: hsl(220, 98%, 61%);
+        }
+
+        .active-check {
+            background: linear-gradient(hsl(192, 100%, 67%), hsl(280, 87%, 65%));
+        }
+
+        .active-check img {
+            transform: scale(1) !important;
+        }
+
+        .complete {
+            text-decoration: line-through;
+            opacity: 0.5;
+        }
+
+        .bloc {
+            width: 100%;
+            max-height: 300px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #lune {
+            display: none;
+        }
+
+        #text::placeholder {
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="banner-con">
+        <div class="banner">
+            <div class="content">
+                <h1>TODO</h1>
+                <img src="./images/icon-sun.svg" alt="" id="sun">
+                <img src="./images/icon-moon.svg" alt="" id="lune">
+            </div>
+            <div class="todo">
+                <form>
+                    <input type="text" placeholder="Create a new todo..." id="text">
+                </form>
+                <div class="bloc">
+                    <ul class="list">
+                        <li class="todo-con"></li>
+                    </ul>
+                    <div class="info">
+                        <p class="left">0 items left</p>
+                        <div class="choice">
+                            <p class="active">All</p>
+                            <p>Active</p>
+                            <p>Completed</p>
+                        </div>
+                        <p class="clear">Clear Completed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let form = document.querySelector("form");
+        let text = document.getElementById("text");
+        let list = document.querySelector(".list")
+        let todoCon = document.querySelector(".todo-con")
+        let array = []
+        form.addEventListener('submit', (e) => {
+            // e.preventDefault();
+            addtodo();
+        })
+        let todos = JSON.parse(localStorage.getItem("todos"));
+        if (todos) {
+            todos.forEach(element => {
+                addtodo(element)
+            });
+        }
+        function addtodo(elem) {
+            let todoColl = document.createElement("div");
+            todoColl.classList.add("todocoll")
+            let todotext = text.value;
+            if (elem) {
+                todotext = elem.text;
+            }
+            if (todotext) {
+                todoColl.innerHTML = `
+    <div class="todo-li">
+    <div class="check ${elem && elem.complete ? "active-check" : ""}"><img src="./images/icon-check.svg" alt=""></div>
+    <p class="ptag ${elem && elem.complete ? "complete" : ""}">${todotext}</p>
+    <button class="close"><img src="./images/icon-cross.svg" alt=""></button>
+  </div>
+  <div class="hr"></div>`;
+                todoCon.appendChild(todoColl);
+                updateLs()
+            }
+            array.push(todotext)
+            console.log(todotext)
+            let close = todoColl.querySelector(".close");
+            close.addEventListener("click", () => {
+                todoColl.remove();
+                updateLs();
+                array.splice(0, 1)
+                left.innerText = `${array.length} items left`
+                const theme = document.getElementById('theme');
+                const newItemInput = document.getElementById('addItem');
+                const todoList = document.querySelector('.content ul');
+                let numitem = document.querySelector('.items-leftt span')
+                const array = []
+                theme.addEventListener('click', () => {
+                    document.querySelector('body').classList = [theme.checked ? 'theme-light' : 'theme-dark'];
+                });
+
+            })
+            if (array.length === 5) {
+                list.style.cssText = ' margin:5px;position: relative;height: 350px;overflow-y: auto;'
+            }
+            let check = todoColl.querySelector(".check");
+            check.addEventListener('click', () => {
+                check.classList.toggle("active-check")
+                todoColl.children[0].children[1].classList.add("complete")
+                updateLs()
+            })
+            text.value = "";
+        }
+        document.querySelector('.add-new-item span').addEventListener('click', () => {
+            if (newItemInput.value.length > 0) {
+                createNewTodoItem(newItemInput.value);
+                newItemInput.value = '';
+
+                function updateLs() {
+                    let ptag = document.querySelectorAll(".ptag")
+                    let arr = [];
+                    ptag.forEach(element => {
+                        arr.push({
+                            text: element.innerText,
+                            complete: element.classList.contains("complete")
+                        })
+                    });
+                    localStorage.setItem("todos", JSON.stringify(arr));
+                }
+                let info = document.querySelectorAll(".choice p")
+                let todoli = document.querySelectorAll(".todocoll")
+                console.log(info);
+                info.forEach(element => {
+                    element.addEventListener("click", () => {
+                        info.forEach(item => {
+                            item.classList.remove("active");
+                        });
+                        element.classList.add("active")
+                        if (element.innerText == "Active") {
+                            todoli.forEach(elem => {
+                                if (!elem.children[0].children[1].classList.contains("complete")) {
+                                    elem.style.display = "block";
+                                } else {
+                                    elem.style.display = "none";
+                                }
+                            });
+                        } else if (element.innerText == "Completed") {
+                            todoli.forEach(elem => {
+                                if (elem.children[0].children[1].classList.contains("complete")) {
+                                    elem.style.display = "block";
+                                } else {
+                                    elem.style.display = "none";
+                                }
+                            });
+                        } else {
+                            todoli.forEach(elem => {
+                                elem.style.display = "block";
+                            });
+                        }
+                    })
+                });
+                let clear = document.querySelector(".clear");
+                clear.addEventListener("click", () => {
+                    todoli.forEach(elem => {
+                        if (elem.children[0].children[1].classList.contains("complete")) {
+                            elem.remove()
+                            updateLs();
+                        }
+                    });
+                })
+                let left = document.querySelector(".left");
+                function setitem() {
+                    left.innerText = `${array.length} items left`
+
+
+                }
+                setitem();
+                /////////////////////////////////////////////////////////////////////////////////////////////
+                let banner = document.querySelector(".banner")
+                let body = document.querySelector("body")
+                let soleil = document.getElementById("sun")
+                let lune = document.getElementById("lune")
+                let bloc = document.querySelector(".bloc")
+                let infochange = document.querySelector(".info")
+                let listchange = document.querySelector(".list")
+                let li = document.querySelector(".todo-con")
+                soleil.addEventListener("click", () => {
+                    body.style.backgroundColor = "#eee"
+                    banner.style.backgroundImage = "url('images/bg-desktop-light.jpg')"
+                    bloc.style.backgroundColor = "#fff"
+                    li.style.color = "hsl(235, 21%, 11%)"
+                    listchange.style.backgroundColor = "#fff"
+                    listchange.style.color = "hsl(235, 21%, 11%)"
+                    infochange.style.backgroundColor = "#fff"
+                    text.style.backgroundColor = "#fff"
+                    text.addEventListener('focus', function () {
+                        this.style.color = "hsl(235, 21%, 11%)";
+                    });
+
+                    soleil.style.display = "none"
+                    lune.style.display = "block"
+                })
+                lune.addEventListener("click", () => {
+                    body.style.backgroundColor = "hsl(235, 21%, 11%)"
+                    banner.style.backgroundImage = "url('images/bg-desktop-dark.jpg')"
+                    bloc.style.backgroundColor = "hsl(235, 21%, 11%)"
+                    li.style.color = "white"
+                    listchange.style.backgroundColor = "hsl(235, 21%, 11%)"
+                    listchange.style.color = "#fff"
+                    infochange.style.backgroundColor = "hsl(235, 21%, 11%)"
+                    text.style.backgroundColor = "hsl(235, 21%, 11%)"
+                    text.addEventListener('focus', function () {
+                        this.style.color = "#fff";
+                    });
+                    lune.style.display = "none"
+                    soleil.style.display = "block"
+                })
+
+    </script>
+</body>
+
+</html>
